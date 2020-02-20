@@ -1,23 +1,10 @@
 import re
 import pymp
-
+import time
 
 wordKey = ['hate', 'love', 'death', 'night', 'sleep', 'time', 'henry', 'hamlet', 'you', 'my', 'blood', 'poison', 'macbeth', 'king', 'heart', 'honest' ] # key of words to look for
 
 list_of_files = list() # list holding each file
-
-#each list will hold contents from each unique file 
-
-file1_words = list()
-file2_words = list()
-file3_words = list()
-file4_words = list()
-file5_words = list()
-file6_words = list()
-file7_words = list()
-file8_words = list()
-
-list_of_wordLists = [file1_words,file2_words,file3_words,file4_words,file5_words,file6_words,file7_words,file8_words]
 
 
 for j in range(1,9): # poulate list holding files
@@ -28,28 +15,38 @@ for j in range(1,9): # poulate list holding files
 #-------------------------------------------------------------------------------------##
 
 def parallelWC():
+    
     wc = pymp.shared.dict()
 
-
-    with pymp.Parallel(1) as p:
+    start_time = time.time()
+    with pymp.Parallel(8) as p:
+        
+        finalRT = int()
+        finalWC = int()
+        wordTime = int()
         
         sumLock = p.lock
     
         for word in wordKey: # for every word in key, initialize that word in dictionary to 0
             wc[word] = 0
         
-        
         for file in p.iterate(list_of_files): # for each file, do this
             
+            #file_read_time = time.time()
+            
             text_file = open(file, "r")  #read mode
-        
+            
+            startReadTime = time.time()
+            
             for line in text_file: # for every line in file. Note doing it this way instead of using re library so i can look for every word in each file
             
+                
+                #print(X)
+                
                 line = line.strip() 
                 line = re.sub(r'[^\w\s]','', line) # remove punctuation
-            
-            
                 line = line.casefold() # make everything lowercase
+                
                 words = line.split(" ") # split  by empty string
                
                
@@ -59,8 +56,13 @@ def parallelWC():
                         wc[word] += 1
                         sumLock.release() # release lock when done
                         
+            finalRT = time.time() - startReadTime
+    total_time = time.time() - start_time
+    
+    print("Total Operation time: " , total_time)
+    #print("Word Count time: " , finalWC)
+    print("File Reading time: " , finalRT)
     print(wc)
-        
 #------------------------------------------------------------------------------------#
 
 parallelWC()
