@@ -2,21 +2,13 @@ import re
 import pymp
 
 
+wordKey = ['hate', 'love', 'death', 'night', 'sleep', 'time', 'henry', 'hamlet', 'you', 'my', 'blood', 'poison', 'macbeth', 'king', 'heart', 'honest' ] # key of words to look for
 
+list_of_files = list() # list holding each file
 
+#each list will hold contents from each unique file 
 
-wordDict = pymp.shared.dict()
-
-
-wordKey = ['hate', 'love', 'death', 'night', 'sleep', 'time', 'henry', 'hamlet', 'you', 'my', 'blood', 'poison', 'macbeth', 'king', 'heart', 'honest' ]
-
-
-testList = list()
-
-i = 1
-list_of_files = list()
-
-file1_words= list()
+file1_words = list()
 file2_words = list()
 file3_words = list()
 file4_words = list()
@@ -28,51 +20,49 @@ file8_words = list()
 list_of_wordLists = [file1_words,file2_words,file3_words,file4_words,file5_words,file6_words,file7_words,file8_words]
 
 
-for j in range(1,9):
+for j in range(1,9): # poulate list holding files
     file = "shakespeare" + str(j) + ".txt"
     list_of_files.append(file)
 
 
-def wordOccurance(fileList, fileName):
-    text_file = open(fileName, "r")  # read mode
-    
-    
-    for line in text_file: # for every line in file
-        
-        line = line.strip() 
-        line = re.sub(r'[^\w\s]','', line) # remove punctuation
-        
-        
-        line = line.casefold() # make everything lowercase
-        words = line.split(" ") # split  by empty string
-        #print(words)
+#-------------------------------------------------------------------------------------##
 
-        for word in words:#for each word in list of words
-            if word in wordKey:
-                fileList.append(word)
+def parallelWC():
+    wc = pymp.shared.dict()
+
+
+    with pymp.Parallel(1) as p:
+        
+        sumLock = p.lock
+    
+        for word in wordKey: # for every word in key, initialize that word in dictionary to 0
+            wc[word] = 0
+        
+        
+        for file in p.iterate(list_of_files): # for each file, do this
+            
+            text_file = open(file, "r")  #read mode
+        
+            for line in text_file: # for every line in file. Note doing it this way instead of using re library so i can look for every word in each file
+            
+                line = line.strip() 
+                line = re.sub(r'[^\w\s]','', line) # remove punctuation
+            
+            
+                line = line.casefold() # make everything lowercase
+                words = line.split(" ") # split  by empty string
                
-#---------------------------------------------------------------------__---------------##
-
-with pymp.Parallel(1) as p:
-    
-    # append words to dictionary
-    #populateDictionary(wordDict2)
-    sumLock = p.lock
-
-    for file in p.iterate(list_of_files): 
-        text_file = open(file, "r")  # read mode
-        for i in range(0,8):
+               
+                for word in words: #for each word in list of words
+                    if word in wordKey:
+                        sumLock.acquire() # lock any other thread from accessing shared dictionary
+                        wc[word] += 1
+                        sumLock.release() # release lock when done
+                        
+    print(wc)
         
-            wordOccurance(list_of_wordLists[i], file)
-            
-            
-        
+#------------------------------------------------------------------------------------#
+
+parallelWC()
 
 
-#---------------------------------------------------------------------__---------------##
-print(file2_words)
-
-#wordOccurance(f1_list, "shakespeare1.txt")    
-#print(f1_list)
-    
-#print(wordDict)
