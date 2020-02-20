@@ -22,8 +22,9 @@ def parallelWC():
     with pymp.Parallel(8) as p:
         
         finalRT = int()
-        finalWC = int()
+        finalWC = int()  #FIGURING OUT TIME
         wordTime = int()
+        startReadTime = int()
         
         sumLock = p.lock
     
@@ -40,9 +41,6 @@ def parallelWC():
             
             for line in text_file: # for every line in file. Note doing it this way instead of using re library so i can look for every word in each file
             
-                
-                #print(X)
-                
                 line = line.strip() 
                 line = re.sub(r'[^\w\s]','', line) # remove punctuation
                 line = line.casefold() # make everything lowercase
@@ -56,7 +54,8 @@ def parallelWC():
                         wc[word] += 1
                         sumLock.release() # release lock when done
                         
-            finalRT = time.time() - startReadTime
+                        
+        finalRT = time.time() - startReadTime
     total_time = time.time() - start_time
     
     print("Total Operation time: " , total_time)
