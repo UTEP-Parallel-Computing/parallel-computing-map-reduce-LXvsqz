@@ -23,12 +23,8 @@ def parallelWC():
         
         finalRT = int()
         startReadTime = int()
-        
-        testingLoadTime = float()
-        
-        testingReadTime = float()
-        
-        averageReadTime = float()
+        startOccuranceTiime = int()
+        finalWC = int()
         
         sumLock = p.lock
     
@@ -37,7 +33,7 @@ def parallelWC():
         
         startReadTime = time.time()
         
-        testingLoadTime = time.time()
+        
         for file in p.iterate(list_of_files): # for each file, do this
             
             #file_read_time = time.time()
@@ -54,28 +50,26 @@ def parallelWC():
                 
                 words = line.split(" ") # split  by empty string
                
-                testingReadTime = time.time() - testingLoadTime
-                
-                #print(testingReadTime)
-                averageReadTime = testingReadTime / 8
-                #print("-----", averageReadTime)
+                startOccuranceTiime = time.time()
                 for word in words: #for each word in list of words
                     if word in wordKey:
                         sumLock.acquire() # lock any other thread from accessing shared dictionary
                         wc[word] += 1
                         sumLock.release() # release lock when done
                         
-                        
-        finalRT = time.time() - startReadTime
+        finalWC = time.time() - startOccuranceTiime
+        print(finalWC)
+        finalRT = time.time() - startReadTime # time to read all 8 files and add to dictionary
     total_time = time.time() - start_time
     
     
     #finalRT = finalRT * 8
     
-    print(averageReadTime)
+   
     print("Total Operation time: " , total_time)
     print("Average Time to Read file: " , finalRT / 8)
     print("Average Processing Time: " , total_time - finalRT)
+    print(finalWC)
     print("--------------------------------------------")
     print(wc)
 #-----------------------------------end function-------------------------------------------------#
