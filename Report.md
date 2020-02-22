@@ -18,7 +18,7 @@ o	Average Time reading 1 file: .115658
 
 These are the times I believe Dr. Pruitt told me to list for my results via email. Though the jump is not as clear as in the matrix multiply, we can see a gradual decline in time the more threads that we add. Though our machine is limited, if each thread can handle their own file and gather occurrences at the same time as other threads, we will see a decline in time. The jump may not be big because at the end of the day we are adding to the same shared dictionary so each thread must wait for the lock to release before it can access the dictionary. Since this would cause a race condition, I do not believe there is a way around it and therefore performance may be slower than expected.
 
-	One comment I had on the lab was Is perhaps having a larger data size would show a greater jump in performance times (for the better). I did consider having 2 shared dictionaries though I did not trust that the parallel sections would act in the way I thought they would. This is a question I will be asking Mr. Pruitt. 
+One comment I had on the lab was Is perhaps having a larger data size would show a greater jump in performance times (for the better). I did consider having 2 shared dictionaries though I did not trust that the parallel sections would act in the way I thought they would. This is a question I will be asking Mr. Pruitt. 
 
 CPU INFORMATION
 model name      : Intel(R) Core(TM) i7-8650U CPU @ 1.90GHz
