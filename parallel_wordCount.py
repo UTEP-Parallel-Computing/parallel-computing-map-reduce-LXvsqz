@@ -2,6 +2,8 @@ import re
 import pymp
 import time
 
+# Alex Vasquez 80579070
+
 wordKey = ['hate', 'love', 'death', 'night', 'sleep', 'time', 'henry', 'hamlet', 'you', 'my', 'blood', 'poison', 'macbeth', 'king', 'heart', 'honest' ] # key of words to look for
 
 list_of_files = list() # list holding each file
